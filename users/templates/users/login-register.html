@@ -1,0 +1,72 @@
+{% extends 'main.html'%}
+
+{% block content %}
+        <section id="login">
+            <div class="containter flex space-y-2 justify-center mx-auto px-6 mt-10">
+                {% if page == login %}
+                <!--Login Page-->    
+                <div id="login" class="flex flex-col px-3 w-4/5 space-y-2 md:w-2/6 border-2 border-darkBlue py-3">
+                    <h4 class="font-bold">Login to Composa</h4>
+                    <form method="POST" action="" class="flex flex-col items-center w-full">
+                        {% csrf_token %}
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3">
+                            <input class="w-full focus:outline-none border-none focus-none" name="email" required type="email" placeholder="Email">
+                        </div>
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3 space-x-3">
+                            <input id="show-password" class="w-full focus:outline-none border-none focus-none" name="password" required type="password" placeholder="Password">
+                            
+                            <input class="mt-2" type="checkbox" onclick="myFunction()">
+                            <p id="show" class="text-xs font-bold mt-2">Show</p>
+                        </div>
+                        <p class="self-center">Forget Password? <a href="{% url 'reset_password' %}"  class="font-bold text-lightBlue">Reset</a></p>
+                        <button type="submit" class="w-full p-3 mb-3 border-2 border-lightBlue bg-darkBlue text-white">Login</button>
+                    </form>
+                    <p class="self-center">Don't have an account yet? <a href="{% url 'register' %}" id="btn-reg"  class="font-bold text-lightBlue">Sign Up</a></p>
+                </div>
+                {% else %}
+                <!--Register Page-->
+                <div id="register" class="block flex flex-col px-3 w-4/5 space-y-2 md:w-2/6 border-2 border-darkBlue py-3">
+                    <h4 class="font-bold">Create Profile</h4>
+                    <form method="POST" action="" enctype="multipart/form-data" class="flex flex-col items-center w-full">
+                        {% csrf_token %}
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3">
+                            {{form.name}}
+                        </div>
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3">
+                            {{form.email}}
+                        </div>
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3">
+                            {{form.username}}
+                        </div>
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3">
+                            {{form.bio}}
+                        </div>
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3">
+                            {{form.dob}}
+                        </div>
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3">
+                            {{form.location}}
+                        </div>
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3">
+                            {{form.profile_image}}
+                            <label for="profile_image" class="rounded-full bg-darkBlue px-3 text-white">Profile Image</label>
+                        </div>
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3">
+                            {{form.password1}}
+                            <input class="mt-2" type="checkbox" onclick="myFunction()">
+                            <p id="show" class="text-xs font-bold mt-2">Show</p>
+                        </div>
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3">
+                            {{form.password2}}
+                            <input class="mt-2" type="checkbox" onclick="myFunction2()">
+                            <p id="show" class="text-xs font-bold mt-2">Show</p>
+                        </div>
+
+                        <button type="submit" class="w-full p-3 mb-3 border-2 border-lightBlue bg-darkBlue text-white">Register</button>
+                    </form>
+                    <p class="self-center">Already have an account? <a href="{% url 'login' %}" id="btn-log" class="font-bold text-lightBlue">Login</a></p>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+{% endblock content %}

@@ -1,0 +1,137 @@
+{% extends 'main.html' %}
+
+{% block content %}
+        <!--Message section-->
+        <section id="message">
+            <div class="container flex justify-center mx-auto px-6 mt-10">
+                <!--chat div-->
+                <div class="flex flex-col w-full md:w-4/6 mt-10">
+                    <div class="flex flex-col md:flex-row spacex-3">
+                        <!--chat body-->
+                        <div class="flex flex-col w-full md:w-3/4">
+                            <div id="chat-div" class="flex flex-col-reverse h-72 bg-lightBlue border-2 w-full">
+                                {% if message %}
+                                {% for messages in message %}
+
+                                {% if request.user == messages.sender %}
+                                <!--sender message-->
+                                <div class="flex flex-row space-x-3 p-3 w-4/5">
+                                    <div class="flex flex-col pt-2">
+                                        <div class="rounded-full w-10 h-10 border-2 border-lightBlue">
+                                            <img src="{{messages.sender.profile_image.url}}" class="rounded-full h-full w-full">
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col w-full">
+                                        <a href="{% url 'profile' %}"><h4 class="font-bold">{{messages.sender.name}}</h4></a>
+                                        <div class="flex flex-col bg-darkBlue p-2 rounded-lg mr-auto">
+                                            
+                                            {% if messages.image %}
+                                            <img class="rounded-lg h-full" src="{{messages.image.url}}">
+                                            {% endif %}
+                                            {% if messages.body%}
+                                            <p class="text-white text-sm">{{messages.body}}</p>
+                                            {% endif %}
+                                            <p class="text-xs">{{messages.created|timesince}} ago</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% elif request.user != messages.sender %}
+                                <!--reciever Message-->
+                                <div class="flex flex-row space-x-3 p-3 self-end w-4/5">
+
+                                    <div class="flex flex-col w-full">
+                                        
+                                        <a class="font-bold ml-auto" href="{% url 'user-account' messages.sender.id %}"><h4>{{messages.sender.name}}</h4></a>
+                                        <div class="flex flex-col bg-darkBlue p-2 rounded-lg ml-auto">
+                                            {% if messages.image %}
+                                            <img class="rounded-lg h-full" src="{{messages.image.url}}">
+                                            {% endif %}
+                                            {% if messages.body%}
+                                            <p class="text-white text-sm">{{messages.body}}</p>
+                                            {% endif %}
+                                            <p class="text-xs">{{messages.created|timesince}} ago</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col pt-2">
+                                        <div class="rounded-full w-10 h-10 border-2 border-lightBlue">
+                                            <img src="{{messages.sender.profile_image.url}}" class="rounded-full h-full w-full">
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                {% endfor %}
+                                {% else %}
+                                    <p class="text-sm text-white p-3">Say Hi to start conversation</p>
+                                {% endif %}
+                            </div>
+                            <!--Chat form-->
+                            <div class="flex flex-col space-x-3 bg-darkBlue p-3">
+                                <form method="POST" action="" enctype="multipart/form-data" class="flex flex-row space-x-3">
+                                    {% csrf_token %}
+                                    {% if request.user not in recipient.blocked.all %}
+                                    {% if recipient not in request.user.blocked.all %}
+                                        {{form.body}}
+                                        {{form.image}}
+                                        <div>
+                                            <label class="text-sm text-white border-2 border-lightBlue px-3 h-4" for="image">Image</label>
+                                        </div>
+                                        <div>
+                                            <button class="px-2 bg-lightBlue text-white rounded-lg">Send</button>
+                                        </div>
+                                    {% else %}
+                                        <p class="text-sm text-white">Unblock {{recipient.name}} to message them</p>
+                                    {% endif %}
+                                    {% else %}
+                                        <p class="text-sm text-white">You can't message {{recipient.name}}</p>
+                                    {% endif %}
+                                </form>
+                            </div>
+                        </div>
+                        <!--online users-->
+                        
+                        
+                        
+                        <div class="hidden md:flex flex-col border-2 border-darkBlue">
+                            <div class="px-3">
+                                <span class="font-bold">Friends Online</span>
+                            </div>
+                            <!--first user-->
+                            {% for userlist in friends %}
+                            {% if userlist.online == True %}
+                            <div class="flex flex-row space-x-3 py-2 px-3 my-2 bg-darkBlue">
+                                <div class="flex flex-col pt-2">
+                                    <div class="rounded-full w-10 h-10 border-2 border-lightGreen">
+                                        <img src="{{userlist.profile_image.url}}" class="rounded-full h-full">
+                                    </div>
+                                </div>
+                                <div class="flex flex-col w-full">
+                                    <h4 class="font-bold text-sm">{{userlist.name}}</h4>
+                                    <div class="flex flex-col">
+                                        <a class="text-lightBlue" href="{% url 'message' userlist.id %}">Message</a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="flex flex-row space-x-3 py-2 px-3 my-2 bg-darkBlue hidden">
+                                <div class="flex flex-col pt-2">
+                                    <div class="rounded-full w-10 h-10 border-2 border-lightGreen">
+                                        <img src="{{userlist.profile_image.url}}" class="rounded-full h-full">
+                                    </div>
+                                </div>
+                                <div class="flex flex-col w-full">
+                                    <h4 class="font-bold text-sm">{{userlist.name}}</h4>
+                                    <div class="flex flex-col">
+                                        <a class="text-lightBlue" href="{% url 'message' userlist.id %}">Message</a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+{% endblock content %}

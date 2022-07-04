@@ -1,0 +1,21 @@
+{% extends 'main.html' %}
+
+
+{% block content %}
+
+<div class="container px-6 justify-center mt-10 mx-auto flex">
+    <div class="flex flex-col p-3 border-2 border-darkBlue w-full md:w-1/2">
+        <!--Request-->
+        <div class="border-2 border-darkBlue py-3 px-5 mb-3 ">
+            <h4 class="text-center font-bold">Delete Account</h4>
+        </div>
+        <p class="p-3">Are You sure you want to remove your account.</p>
+        <form class="flex flex-row space-x-6" method="POST" action="">
+            {% csrf_token %}
+            <a href="{% url 'profile' %}">Back</a>
+            <button class="rounded-lg bg-darkBlue text-white px-3" type="submit">Yes</button>
+        </form>
+    </div>
+</div>
+
+{% endblock content %}

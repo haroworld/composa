@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="css/main.css">
+        <title>Manage Landing Page</title>
+    </head>
+    <body>
+        <!--navbar-->
+        <nav class="relative container mx-auto p-6 bg-lightBlue">
+            <div class="flex items-center justify-between">
+                <div class="pt-2 ">
+                    <a href="index.html" class="hover:text-blue font-bold">COMPOSER</a>
+                </div>
+                <div class="hidden md:flex space-x-6">
+                    <a href="profile.html" class="hover:text-white">Profile</a>
+                    <a href="#" class="hover:text-white">Search-user</a>
+                    <a href="#" class="hover:text-white">Logout</a>
+                    <a href="#" class="hover:text-white">Login</a>
+                </div>
+                <!--Hambuger Icon-->
+                <button id="menu-btn" class="block hamburger md:hidden focus:ouline-none">
+                    <span class="hamburger-top"></span>
+                    <span class="hamburger-middle"></span>
+                    <span class="hamburger-bottom"></span>
+                </button>
+            </div>
+            <!--Mobile menu-->
+            <div class="md:hidden">
+                <div id="menu" class="absolute flex-col items-center self-end hidden py-8 mt-10 space-y-6 font-bold bg-white sm:w:auto sm:self-center left-6 right-6 drop-shadow-md">
+                    <a href="profile.html" class="hover:text-lightBlue">Profile</a>
+                    <a href="#" class="hover:text-lightBlue">Search-user</a>
+                    <a href="#" class="hover:text-lightBlue">Logout</a>
+                    <a href="#" class="hover:text-lightBlue">Login</a>
+                </div>
+            </div>
+        </nav>
+        <section id="register">
+            <div class="containter flex space-y-2 justify-center mx-auto px-6 mt-10">
+                <!--Register Page-->
+                <div id="register" class="block flex flex-col px-3 w-4/5 space-y-2 md:w-2/6 border-2 border-darkBlue py-3">
+                    <h4 class="font-bold">Create Profile</h4>
+                    <form class="flex flex-col items-center w-full">
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3">
+                            <input class="w-full focus:outline-none border-none focus-none" required type="text" placeholder="Enter name: surname first">
+                        </div>
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3">
+                            <input class="w-full focus:outline-none border-none focus-none" required type="email" placeholder="Email">
+                        </div>
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3">
+                            <input class="w-full focus:outline-none border-none focus-none" required type="text" placeholder="Username">
+                        </div>
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3">
+                            <textarea class="w-full focus:outline-none border-none focus-none" type="text" placeholder="Bio" rows="5"></textarea>
+                        </div>
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3">
+                            <input class="w-full focus:outline-none border-none focus-none" required type="date">
+                        </div>
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3">
+                            <input class="w-full focus:outline-none border-none focus-none" type="text" placeholder="Location">
+                        </div>
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3">
+                            <input id="files" class="hidden w-full focus:outline-none border-none focus-none" type="file">
+                            <label for="files" class="rounded-full bg-darkBlue px-3 text-white">Profile Image</label>
+                        </div>
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3">
+                            <input class="w-full focus:outline-none border-none focus-none" required type="password" placeholder="Enter Password">
+                        </div>
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3">
+                            <input class="w-full focus:outline-none border-none focus-none" required type="password" placeholder="Confirm Password">
+                        </div>
+
+                        <button type="submit" class="w-full p-3 mb-3 border-2 border-lightBlue bg-darkBlue text-white">Register</button>
+                    </form>
+                    <p class="self-center">Already have an account? <a href="login.html" id="btn-log" class="font-bold text-lightBlue">Login</a></p>
+                </div>
+            </div>
+        </section>
+
+        <script src="js/script.js"></script>
+    </body>
+</html>

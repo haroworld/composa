@@ -1,0 +1,58 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<div class="container px-6 justify-center mt-10 mx-auto flex">
+    <div class="flex flex-col p-3 border-2 border-darkBlue w-full md:w-1/2">
+        <!--Request-->
+        <div class="border-2 border-darkBlue py-3 px-5 mb-3 ">
+            <h4 class="text-center">Request Received({{request.user.received_requests.count}})</h4>
+        </div>
+        <!--friend accept Form-->
+        {% if receive %}
+        {% for userlist in receive %}
+        <div class="flex flex-row space-x-3 p-3 bg-lightBlue rounded-lg mb-3">
+            <a href="{% url 'user-account' userlist.id %}">
+            {% if userlist.online == True %}
+                <div class="rounded-full w-10 h-10 border-2 border-lightGreen">
+                    <img src="{{userlist.profile_image.url}}" class="rounded-full h-full w-full">
+                </div>
+            {% else %}
+                <div class="rounded-full w-10 h-10 border-2 border-lightBlue">
+                    <img src="{{userlist.profile_image.url}}" class="rounded-full h-full w-full">
+                </div>
+            {% endif %}
+            </a>
+            <div class="flex flex-col space-x-3">
+                <a href="{% url 'user-account' userlist.id %}"><h4 class="font-bold">{{userlist.name}}</h4></a>
+                <div class="flex flex-row space-x-6 justify-center">
+                    <form method="POST" action="{% url 'accept-request' userlist.id %}">
+                        {% csrf_token %}
+
+                        <button><span>Accept</span></button>
+                    </form>
+                    <form method="POST" action="{% url 'delete-request' userlist.id %}">
+                        {% csrf_token %}
+
+                        <button ><span>Delete</span></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        <!--Load more Button-->
+        <div class="flex flex-row space-x-3 justify-evenly mx-auto">
+        {% if receive.has_other_pages %}
+        {% if receive.has_next %}
+            <a href="?page={{receive.next_page_number}}" class="bg-darkBlue px-3 text-white rounded-lg">More</a>
+        {% endif %}
+        {% endif %}
+        </div>
+        {% else %}
+            <p class="self-center">No friend request received</p>
+        {% endif %}
+    </div>
+</div>
+
+
+{% endblock content %}

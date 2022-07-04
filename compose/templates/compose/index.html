@@ -1,0 +1,368 @@
+{% extends 'main.html'%}
+
+{% block content %}
+        <!--post section-->
+        <section id="composer">
+            <div class="container flex justify-center px-6 mx-auto mt-10 flex-col md:flex-row space-x-3">
+                <!--Compose section-->
+                <div class="flex flex-col p-5 border-2 w-full md:w-1/2">
+                    <!--post form-->
+                    <div class="mb-5 w-full">
+                        <form method="POST" action="{% url 'home' %}" enctype="multipart/form-data" class="flex flex-col border-2 border-lightBlue rounded-lg p-3">
+                            {% csrf_token %}
+                            <div class="mb-2">
+                                {{form.post_body}}
+                            </div>
+                            <div class="flex flex-row space-x-2 justify-evenly">
+                                <div class="">
+                                    {{form.post_image}}
+                                    <label class="text-sm mb-2 border-2 border-lightBlue px-3" for="post_image">Image</label>
+                                </div>
+                                <div class="mb-2">
+                                    {{form.post_privacy}}
+                                </div>
+                                <div class="mb-2">
+                                    <button class="px-3 md:px-5 rounded-lg text-white bg-lightBlue">COMPOSE</button>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                    <!--Post Body-->
+                    {% for compose in posts %}
+                    {% if request.user not in compose.blocked_users.all %}
+                    {% if request.user not in compose.owner.blocked.all %}
+                    {% if compose.owner not in request.user.blocked.all %}
+                    <div class="flex flex-row mb-5 w-full p-3 border-b border-black">
+                        {% if request.user == compose.owner %}<a href="{% url 'profile' %}">{% else %}<a href="{% url 'user-account' compose.owner.id %}">{% endif %}
+                        <div class="flex flex-col pt-5">
+                            <div class="rounded-full w-10 h-10 border-2 border-lightBlue"><img src="{{compose.owner.profile_image.url}}" class="rounded-full h-full w-full"></div>
+                        </div>
+                        </a>
+                        <div class="flex flex-col mt-3">
+                            <div class="flex flex-col px-2">
+                                {% if request.user == compose.owner %}<a href="{% url 'profile' %}">{% else %}<a href="{% url 'user-account' compose.owner.id %}">{% endif %}
+                                <div class="flex flex-row space-x-6">
+                                    <h4 class="font-bold">{{compose.owner.username}}</h4>
+                                    <span>{{compose.owner.name}}</span>
+                                </div>
+                                </a>
+                                
+                                {% if compose.main_post %}
+                                    <a href="{% url 'single_post' compose.id %}"><p class="font-light text-xs"> 
+                                    {% if compose in compose.main_post.reposted %}
+                                        {% if compose.main_post.owner == compose.owner %}
+                                            reposted
+                                        {% else %}
+                                            repost {{compose.main_post.owner.name}} post
+                                        {% endif %}
+                                    {% else %}
+                                        {% if compose.owner != compose.main_post.owner %}
+                                            comment on {{compose.main_post.owner.name}}
+                                            {% if compose.main_post not in compose.main_post.main_post.reposted.all %}
+                                                post
+                                            {% else %}
+                                                repost
+                                            {% endif %}
+                                        {% else %}
+                                            comment on their post
+                                        {% endif %}
+                                    {% endif %}
+                                        {{compose.created|timesince}} ago</p></a>
+                                {% else %}
+                                    <p class="font-light text-xs">posted {{compose.created|timesince}} ago</p>
+                                {% endif %}
+                            </div>
+                            <!--post body-->
+                            <div class="px-2 mb-5">
+                                <a href="{% url 'single_post' compose.id %}">
+                                {% if compose.post_body %}
+                                    <p>{{compose.post_body}}</p>
+                                {% endif %}
+                                {% if compose.post_image %}
+                                    <img class="rounded-lg w-1/2" src="{{compose.post_image.url}}">
+                                {% endif %}
+                                </a>
+                            </div>
+                            <!--reacted post-->
+                            {% if compose.main_post %}
+                            {% if request.user not in compose.main_post.blocked_users.all %}
+                            {% if request.user not in compose.main_post.owner.blocked.all %}
+                            {% if compose.main_post.owner not in request.user.blocked.all %}
+                            {% if compose.main_post.post_body or compose.main_post.post_image %}
+                            <a href="{% url 'single_post' compose.main_post.id %}">
+                            <div class="flex flex-row p-2 bg-lightBlue rounded-lg w-full">
+                                <div class="flex">
+                                    <div class="rounded-full w-10 h-10 border-2 border-lightBlue"><img src="{{compose.main_post.owner.profile_image.url}}" class="rounded-full h-full w-full"></div>
+                                </div>
+                                <div class="flex flex-col">
+                                    <div class="flex-flex-col">
+                                        <div class="flex flex-row">
+                                            <h4 class="font-bold">{{compose.main_post.owner.username}}</h4>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex flex-col">
+                                        <p class="font-light text-xs">{{compose.main_post.created|timesince}} ago</p>
+                                        {% if compose.main_post.post_body %}
+                                            <p>{{compose.main_post.post_body}}</p>
+                                        {% endif %}
+                                        {% if compose.main_post.post_image %}
+                                            <img class="rounded-lg w-1/2" src="{{compose.main_post.post_image.url}}">
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            </a>
+                            {% else %}
+                            <a href="{% url 'single_post' compose.main_post.id %}">
+                                <div class="flex flex-row p-2 bg-lightBlue rounded-lg w-full">
+                                    <div class="flex flex-row space-x-6">
+                                        <div class="rounded-full w-10 h-10 border-2 border-lightBlue"><img src="{{compose.main_post.main_post.owner.profile_image.url}}" class="rounded-full h-full w-full"></div>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <div class="flex-flex-col">
+                                            <div class="flex flex-row">
+                                                <h4 class="font-bold">{{compose.main_post.main_post.owner.username}}</h4>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="flex flex-col">
+                                            <p class="font-light text-xs">{{compose.main_post.main_post.created|timesince}} ago</p>
+                                            {% if compose.main_post.main_post.post_body %}
+                                                <p>{{compose.main_post.main_post.post_body}}</p>
+                                            {% endif %}
+                                            {% if compose.main_post.main_post.post_image %}
+                                                <img class="compose-image" src="{{compose.main_post.main_post.post_image.url}}">
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                            {% endif %}
+                            {% else %}
+                            <div class="flex flex-row p-2 bg-lightBlue rounded-lg w-full">
+                                <p>Unblock {{compose.main_post.owner.name}} to view post</p>
+                            </div>
+                            {% endif %}
+                            {% else %}
+                            <div class="flex flex-row p-2 bg-lightBlue rounded-lg w-full">
+                                <p>You can't view this post at the momment</p>
+                            </div>
+                            {% endif %}
+                            {% else %}
+                            <div class="flex flex-row p-2 bg-lightBlue rounded-lg w-full">
+                                <p>You can't view this post at the momment</p>
+                            </div>
+                            {% endif %}
+                            {% endif %}
+                            <div class="w-full mt-2">
+                                <!--Comment form-->
+                                <form method="POST" action="{% url 'comment' compose.id %}" enctype="multipart/form-data" class="flex flex-col mx-auto border-2 border-lightBlue rounded-lg p-2">
+                                    {% csrf_token %}
+                                    <div class="mb-2 flex flex-row">
+                                        {{commentform.post_body}}
+                                        <div class="">
+                                            {{commentform.post_image}}
+                                            <label class="text-sm border-2 border-lightBlue px-3 h-4" for="com_image">Image</label>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-row">
+                                        <div class="">
+                                            <button class="border-2 bg-lightBlue px-2 rounded-full text-white" type="submit"><span class="text-xs">Comment</span></button>
+                                        </div>
+                                    </div>
+                                    
+                                </form>
+                            </div>
+                            <!--repost and like button-->
+                            <div class="flex flex-row justify-evenly space-x-3">
+                                <a href="{% url 'single_post' compose.id %}" class="text-lightBlue"><span class="text-sm">Comments | {{compose.comments.all.count}}</span></a>
+                                {% if compose in compose.main_post.reposted %}
+
+                                    {% if request.user.id not in compose.main_post.reposters %}
+                                        <a href="{% url 'repost' compose.main_post.id %}" type="submit" class="text-lightBlue">
+                                            <span class="text-sm">Repost | {{compose.main_post.reposts.count}} </span></a>
+                                
+                                    {% else %}
+                                        <form method="POST" action="{% url 'delete-repost' compose.main_post.id %}">
+                                            {% csrf_token %}
+                                    
+                                            <button class="text-lightBlue"> <span class="text-sm">
+                                                Undorepost | {{compose.main_post.reposts.count}} </span></button>
+                                        </form>
+                                    {% endif %}
+
+                                {% else %}
+                                    {% if request.user.id not in compose.reposters %}
+                                        <a href="{% url 'repost' compose.id %}" type="submit" class="text-lightBlue">
+                                            <span class="text-sm">Repost | {{compose.reposts.count}} </span></a>
+                                        
+                                    {% else %}
+                                        <form method="POST" action="{% url 'delete-repost' compose.id %}">
+                                            {% csrf_token %}
+                                    
+                                            <button class="text-lightBlue"> <span class="text-sm">
+                                                Undorepost | {{compose.reposts.count}} </span></button>
+                                        </form>
+                                    {% endif %}
+                                {% endif %}
+                                <!--Like Button-->
+                                {% if request.user.id not in compose.likers %}
+                                    <form method="POST" action="{% url 'likepost' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" value="{{compose.pk}}" name="pk">
+
+                                        <button class="text-lightBlue"> <span class="text-sm">Like | {{compose.likedpost_set.all.count}}</span></button>
+                                    </form>
+                                {% else %}
+                                    <form method="POST" action="{% url 'unlike' compose.id %}">
+                                        {% csrf_token %}
+
+                                        <button class="text-lightBlue"><span class="text-sm">Unlike | {{compose.likedpost_set.all.count}}</span></button>
+                                    </form>
+                                {% endif %}
+                                <!---End of Like Button-->
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+                    {% endif %}
+                    {% endfor %}
+                    <!--Load more Button and latest stories button-->
+                    <div class="flex flex-row space-x-3 justify-evenly mx-auto">
+                        <a href="{% url 'home' %}" class="bg-darkBlue px-3 text-white rounded-lg">Latest Stories</a>
+                    {% if posts.has_other_pages %}
+                    {% if posts.has_next %}
+                        <a href="?page={{posts.next_page_number}}" class="bg-darkBlue px-3 text-white rounded-lg">More Stories</a>
+                    {% endif %}
+                    {% endif %}
+                    </div>
+                </div>
+                <!--User section-->
+                <div class="hidden md:flex flex-col px-2">
+                    <!--Request-->
+                    <div class="border-2 border-darkBlue py-3 px-5 mb-3 ">
+                        <h4 class="text-center">Request Received</h4>
+                    </div>
+                    <!--friend accept Form-->
+                    {% if receive %}
+                    {% for userlist in receive %}
+                    <div class="flex flex-row space-x-3 p-3 bg-lightBlue rounded-lg mb-3">
+                        <a href="{% url 'user-account' userlist.id %}">
+                        {% if userlist.online == True %}
+                            <div class="rounded-full w-10 h-10 border-2 border-lightGreen">
+                                <img src="{{userlist.profile_image.url}}" class="rounded-full h-full w-full">
+                            </div>
+                        {% else %}
+                            <div class="rounded-full w-10 h-10 border-2 border-lightBlue">
+                                <img src="{{userlist.profile_image.url}}" class="rounded-full h-full w-full">
+                            </div>
+                        {% endif %}
+                        </a>
+                        <div class="flex flex-col space-x-3">
+                            <a href="{% url 'user-account' userlist.id %}"><h4 class="font-bold">{{userlist.name}}</h4></a>
+                            <div class="flex flex-row space-x-6 justify-center">
+                                <form method="POST" action="{% url 'accept-request' userlist.id %}">
+                                    {% csrf_token %}
+        
+                                    <button><span>Accept</span></button>
+                                </form>
+                                <form method="POST" action="{% url 'delete-request' userlist.id %}">
+                                    {% csrf_token %}
+        
+                                    <button ><span>Delete</span></button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% if receive.count >= 5 %}
+                    <div class="flex justify-center mb-2">
+                        <a class="rounded-lg bg-lightBlue px-3 text-white" href="{% url 'request_receive' %}">More</a>
+                    </div>
+                    {% endif %}
+                    {% else %}
+                        <p class="self-center">No friend request received</p>
+                    {% endif %}
+                    <!--Request Sent-->
+                    <div class="border-2 border-darkBlue py-3 px-5 mb-3 ">
+                        <h4 class="text-center">Request Sent</h4>
+                    </div>
+                    <!--cancle Request Form-->
+                    {% if send %}
+                    {% for userlist in send %}
+                    <div class="flex flex-row space-x-3 p-3 bg-lightBlue rounded-lg mb-3">
+                        <a href="{% url 'user-account' userlist.id %}">
+                        {% if userlist.online == True %}
+                            <div class="rounded-full w-10 h-10 border-2 border-lightGreen">
+                                <img src="{{userlist.profile_image.url}}" class="rounded-full h-full w-full">
+                            </div>
+                        {% else %}
+                            <div class="rounded-full w-10 h-10 border-2 border-lightBlue">
+                                <img src="{{userlist.profile_image.url}}" class="rounded-full h-full w-full">
+                            </div>
+                        {% endif %}
+                        </a>
+                        <div class="flex flex-col space-x-3">
+                            <a href="{% url 'user-account' userlist.id %}"><h4 class="font-bold">{{userlist.name}}</h4></a>
+                            <div class="flex flex-row space-x-6 justify-center">
+                                <form method="POST" action="{% url 'cancle-request' userlist.id %}">
+                                    {% csrf_token %}
+        
+                                    <button class="self-center"><span>Cancle Request</span></button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% if send.count >= 5 %}
+                    <div class="flex justify-center mb-2">
+                        <a class="rounded-lg bg-lightBlue px-3 text-white" href="{% url 'request_sent' %}">More</a>
+                    </div>
+                    {% endif %}
+                    {% else %}
+                        <p class="self-center">You have not sent any friend request</p>
+                    {% endif %}
+                    <!--Suggest Users-->
+                    <div class="border-2 border-darkBlue py-3 px-5 mb-3 ">
+                        <h4 class="text-center">Suggest User</h4>
+                    </div>
+                    <!--Add friend Form-->
+                    {% for suggest_user in users %}
+                    <div class="flex flex-row space-x-3 p-3 bg-lightBlue rounded-lg mb-3">
+                        <a href="{% url 'user-account' suggest_user.id %}">
+                        {% if suggest_user.online == True %}
+                            <div class="rounded-full w-10 h-10 border-2 border-lightGreen">
+                                <img src="{{suggest_user.profile_image.url}}" class="rounded-full h-full w-full">
+                            </div>
+                        {% else %}
+                            <div class="rounded-full w-10 h-10 border-2 border-lightBlue">
+                                <img src="{{suggest_user.profile_image.url}}" class="rounded-full h-full w-full">
+                            </div>
+                        {% endif %}
+                        </a>
+                        <div class="flex flex-col space-x-3">
+                            <a href="{% url 'user-account' suggest_user.id %}"><h4 class="font-bold">{{suggest_user.name}}</h4></a>
+                            <div class="flex flex-row space-x-6 justify-center">
+                                <form method="POST" action="{% url 'friend-request' suggest_user.id %}">
+                                    {% csrf_token %}
+        
+                                    <button class="self-center"><span>Add Friend</span></button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% if users.count >= 5 %}
+                    <div class="flex justify-center mb-2">
+                        <a class="rounded-lg bg-lightBlue px-3 text-white" href="{% url 'suggested_user' %}">More</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+{% endblock content %}
+    

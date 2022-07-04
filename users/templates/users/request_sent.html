@@ -1,0 +1,54 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<div class="container flex justify-center mx-auto px-6 mt-10">
+    <div class="flex flex-col border-2 border-darkBlue p-3 w-full md:w-1/2">
+
+        <!--Request Sent-->
+        <div class="border-2 border-darkBlue py-3 px-5 mb-3 ">
+            <h4 class="text-center">Request Sent({{request.user.sent_requests.count}})</h4>
+        </div>
+        <!--cancle Request Form-->
+        {% if send %}
+        {% for userlist in send %}
+        <div class="flex flex-row space-x-3 p-3 bg-lightBlue rounded-lg mb-3">
+            <a href="{% url 'user-account' userlist.id %}">
+            {% if userlist.online == True %}
+                <div class="rounded-full w-10 h-10 border-2 border-lightGreen">
+                    <img src="{{userlist.profile_image.url}}" class="rounded-full h-full w-full">
+                </div>
+            {% else %}
+                <div class="rounded-full w-10 h-10 border-2 border-lightBlue">
+                    <img src="{{userlist.profile_image.url}}" class="rounded-full h-full w-full">
+                </div>
+            {% endif %}
+            </a>
+            <div class="flex flex-col space-x-3">
+                <a href="{% url 'user-account' userlist.id %}"><h4 class="font-bold">{{userlist.name}}</h4></a>
+                <div class="flex flex-row space-x-6 justify-center">
+                    <form method="POST" action="{% url 'cancle-request' userlist.id %}">
+                        {% csrf_token %}
+
+                        <button class="self-center"><span>Cancle Request</span></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        <!--Load more Button-->
+        <div class="flex flex-row space-x-3 justify-evenly mx-auto">
+            {% if send.has_other_pages %}
+            {% if send.has_next %}
+                <a href="?page={{send.next_page_number}}" class="bg-darkBlue px-3 text-white rounded-lg">More</a>
+            {% endif %}
+            {% endif %}
+            </div>
+        {% else %}
+            <p class="self-center">You have not sent any friend request</p>
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock content %}

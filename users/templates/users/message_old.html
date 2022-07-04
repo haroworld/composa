@@ -1,0 +1,90 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<div class="div-container">
+    
+    <div class="msg-container">
+        <a href="{% url 'home' %}">Go back</a>
+        <div class="col-1">
+            <div class="chat-div">
+                {% if message %}
+                    {% for messages in message %}
+                    
+                        {% if request.user == messages.sender %}
+                                <div class="msg-row msg-row2">
+                                    <img src="{{messages.sender.profile_image.url}}" class="msg-owner">
+                                    <div class="msg-text">
+                                        <a href="{% url 'profile' %}"><h2>{{messages.sender.name}}</h2></a>
+                                        {% if messages.image %}
+                                            <img class="image-msg" src="{{messages.image.url}}">
+                                        {% endif %}
+                                        <p>{{messages.body}}</p>
+                                        <small>{{messages.created|timesince}} ago</small>
+                                    </div>
+                                </div>
+                        {% elif request.user != messages.sender %}
+                            <div class="msg-row">
+                                <div class="msg-text">
+                                    <a href="{% url 'user-account' messages.sender.id %}"><h2>{{messages.sender.name}}</h2></a>
+                                    {% if messages.image %}
+                                        <img class="image-msg" src="{{messages.image.url}}">
+                                    {% endif %}
+                                    <p>{{messages.body}}</p>
+                                    <small>{{messages.created|timesince}} ago</small>
+                                </div>
+                                <img src="{{messages.sender.profile_image.url}}" class="msg-owner">
+                            </div>
+                        {% endif %}
+                    
+                    {% endfor %}
+                {% else %}
+                        <p>Say Hi to start conversation</p>
+                {% endif %}
+            </div>
+            <form method="POST" action="" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-chat">
+                    {% for fields in form %}
+                        <label for="formInput#text">{{fields.label}}</label>
+                            {{fields}}
+                    {% endfor %}
+                </div>
+                {% if request.user not in recipient.blocked.all %}
+                    {% if recipient not in request.user.blocked.all %}
+                        <button class="reg-button"><span>Send</span></button>
+                    {% else %}
+                        <p>Unblock {{recipient.name}} to message them</p>
+                    {% endif %}
+                {% else %}
+                    <p>You can't message {{recipient.name}}</p>
+                {% endif %}
+            </form>
+        </div>
+        <div class="col-2">
+            <span>Online</span>
+            {% for userlist in friends %}
+                {% if userlist.online == True %}
+                <div class="user-list">
+                    <div class="div-img">
+                        <a href="{% url 'message' userlist.id %}" class="user-link">
+                            {% if userlist.online == True %}
+                            <img class="online" src="{{userlist.profile_image.url}}">
+                            {% else %}
+                                <img class="offline" src="{{userlist.profile_image.url}}">
+                            {% endif %}
+                        </a>
+                    </div>
+                    <div class="friend-accept">
+                        <a href="{% url 'message' userlist.id %}" class="user-link">
+                            <h4>{{userlist.name}}</h4></a>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+
+{% endblock content %}

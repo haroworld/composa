@@ -1,0 +1,49 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<div class="container flex justify-center mx-auto px-6 mt-10">
+    <div class="flex flex-col border-2 border-darkBlue p-3 w-full md:w-1/2">
+
+        <!--Suggest Users-->
+        <div class="border-2 border-darkBlue py-3 px-5 mb-3 ">
+            <h4 class="text-center">Suggest User</h4>
+        </div>
+        <!--Add friend Form-->
+        {% for suggest_user in users %}
+        <div class="flex flex-row space-x-3 p-3 bg-lightBlue rounded-lg mb-3">
+            <a href="{% url 'user-account' suggest_user.id %}">
+            {% if suggest_user.online == True %}
+                <div class="rounded-full w-10 h-10 border-2 border-lightGreen">
+                    <img src="{{suggest_user.profile_image.url}}" class="rounded-full h-full w-full">
+                </div>
+            {% else %}
+                <div class="rounded-full w-10 h-10 border-2 border-lightBlue">
+                    <img src="{{suggest_user.profile_image.url}}" class="rounded-full h-full w-full">
+                </div>
+            {% endif %}
+            </a>
+            <div class="flex flex-col space-x-3">
+                <a href="{% url 'user-account' suggest_user.id %}"><h4 class="font-bold">{{suggest_user.name}}</h4></a>
+                <div class="flex flex-row space-x-6 justify-center">
+                    <form method="POST" action="{% url 'friend-request' suggest_user.id %}">
+                        {% csrf_token %}
+
+                        <button class="self-center"><span>Add Friend</span></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        <!--Load more Button-->
+        <div class="flex flex-row space-x-3 justify-evenly mx-auto">
+            {% if users.has_other_pages %}
+            {% if users.has_next %}
+                <a href="?page={{users.next_page_number}}" class="bg-darkBlue px-3 text-white rounded-lg">More</a>
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+{% endblock content %}

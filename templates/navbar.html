@@ -1,0 +1,37 @@
+
+    <!--navbar-->
+    <nav class="relative container mx-auto p-6 bg-lightBlue">
+        <div class="flex items-center justify-between">
+            <div class="pt-2 ">
+                <a href="{% url 'home' %}" class="hover:text-blue font-bold">COMPOSER</a> 
+            </div>
+            <div class="hidden md:flex space-x-6">
+                {% if request.user.is_authenticated %}
+                <div class="rounded-full w-10 h-10 border-2 border-lightBlue"><a href="{% url 'profile' %}"><img class="rounded-full h-full" src="{{request.user.profile_image.url}}"></a></div>
+                <a href="{% url 'profile' %}" class="hover:text-white">Profile</a>
+                <a href="{% url 'userslist' %}" class="hover:text-white">Search-user</a>
+                <a href="{% url 'logout' %}" class="hover:text-white">Logout</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="hover:text-white">Login</a>
+                {% endif %}
+            </div>
+            <!--Hambuger Icon-->
+            <button id="menu-btn" class="block hamburger md:hidden focus:ouline-none">
+                <span class="hamburger-top"></span>
+                <span class="hamburger-middle"></span>
+                <span class="hamburger-bottom"></span>
+            </button>
+        </div>
+        <!--Mobile menu-->
+        <div class="md:hidden">
+            <div id="menu" class="absolute flex-col items-center self-end hidden py-8 mt-10 space-y-6 font-bold bg-white sm:w:auto sm:self-center left-6 right-6 drop-shadow-md">
+                {% if request.user.is_authenticated %}
+                <a href="{% url 'profile' %}" class="hover:text-lightBlue">Profile</a>
+                <a href="{% url 'userslist' %}" class="hover:text-lightBlue">Search-user</a>
+                <a href="{% url 'logout' %}" class="hover:text-lightBlue">Logout</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="hover:text-lightBlue">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>

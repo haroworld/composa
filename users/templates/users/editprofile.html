@@ -1,0 +1,39 @@
+{% extends 'main.html' %}
+
+{% block content %}
+        <section id="editprofile">
+            <div class="containter flex space-y-2 justify-center mx-auto px-6 mt-10">
+                <!--edit Profile-->   
+                <div class="flex flex-col px-3 w-4/5 space-y-2 md:w-2/6 border-2 border-darkBlue py-3">
+                    <h4 class="font-bold">Edit Profile</h4>
+                    <form method="POST" action="{% url 'edit-profile' %}" enctype="multipart/form-data" class="flex flex-col items-center w-full">
+                        {% csrf_token %}
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3">
+                            {{form.name}}
+                        </div>
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3">
+                            {{form.username}}
+                        </div>
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3">
+                            {{form.bio}}
+                        </div>
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3">
+                            {{form.dob}}
+                        </div>
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3">
+                            {{form.location}}
+                        </div>
+                        <div class="p-3 border-2 border-lightBlue flex flex-row w-full mb-3 flex-wrap">
+                            {{form.profile_image}}
+                            <div>
+                            <label for="profile_image" class="rounded-full bg-darkBlue px-3 text-white">Profile Image</label>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="w-full p-3 mb-3 border-2 border-lightBlue bg-darkBlue text-white">Edit Profile</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+{% endblock content %}

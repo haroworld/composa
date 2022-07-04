@@ -1,0 +1,24 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<div class="login-container">
+    <div class="login">
+        <form method="POST" action="{% url 'edit-profile' %}" class="form-edit">
+            <a href="{% url 'profile' %}">Go back</a>
+            <h3>Edit Profile</h3>
+            {% csrf_token %}
+            {% for fields in form %}
+                <label for="formInput#text">{{fields.label}}</label>
+                <div class="reg-input-div">
+                    {{fields}}
+                </div>
+            {% endfor %}
+            <button class="reg-button"><span>Edit Account</span></button>
+        </form>
+    </div>
+
+</div>
+
+
+{% endblock content %}

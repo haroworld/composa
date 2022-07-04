@@ -1,0 +1,60 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<div class="container px-6 justify-center mt-10 mx-auto flex">
+    <div class="flex flex-col p-3 border-2 border-darkBlue w-full md:w-1/2">
+        <!--Request-->
+        <div class="border-2 border-darkBlue py-3 px-5 mb-3 ">
+            <h4 class="text-center">Friends({{request.user.friends.count}})</h4>
+        </div>
+        <!--friend accept Form-->
+        {% if friends %}
+        {% for userlist in friends %}
+        <div class="flex flex-row space-x-3 p-3 bg-lightBlue rounded-lg mb-3">
+            <a href="{% url 'user-account' userlist.id %}">
+            {% if userlist.online == True %}
+            <div class="rounded-full w-10 h-10 border-2 border-lightGreen">
+                <img src="{{userlist.profile_image.url}}" class="rounded-full h-full w-full">
+            </div>
+            {% else %}
+            <div class="rounded-full w-10 h-10 border-2 border-lightBlue">
+                <img src="{{userlist.profile_image.url}}" class="rounded-full h-full w-full">
+            </div>
+            {% endif %}
+            </a>
+            <div class="flex flex-col space-x-3">
+                {% if request.user == userlist %} <a href="{% url 'profile' %}">{% else %}
+                    <a href="{% url 'user-account' userlist.id %}">{% endif %}
+                    <h4 class="font-bold">{{userlist.name}}</h4></a>
+                <div class="flex flex-row space-x-6 justify-center">
+                    {% if userlist in request.user.friends.all %}
+                    <form method="POST" action="{% url 'unfriend' userlist.id %}">
+                        {% csrf_token %}
+
+                        <button class="text-white text-sm"><span>Unfriend</span></button>
+                    </form>
+                    {% endif %}
+                    {% if request.user != userlist %} 
+                        <a class="text-white text-sm" href="{% url 'message' userlist.id %}"><span>Message</span></a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        <!--Load more Button-->
+        <div class="flex flex-row space-x-3 justify-evenly mx-auto">
+        {% if friends.has_other_pages %}
+        {% if friends.has_next %}
+            <a href="?page={{friends.next_page_number}}" class="bg-darkBlue px-3 text-white rounded-lg">More</a>
+        {% endif %}
+        {% endif %}
+        </div>
+        {% else %}
+            <p class="self-center">No Friend</p>
+        {% endif %}
+    </div>
+</div>
+
+
+{% endblock content %}

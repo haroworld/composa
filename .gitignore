@@ -1,0 +1,7 @@
+/css_old
+images/*
+!images/message_media
+!images/profiles
+message_media/*
+profiles/*
+!profiles/.user-default.png

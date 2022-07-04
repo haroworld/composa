@@ -1,0 +1,259 @@
+{% extends 'main.html'%}
+
+{% block content %}
+
+    <div class="div-container">
+        <div class="comments">
+                <div class="single-comment">
+                    <div>
+                        <!--Post owner Info-->
+                        <div class="compose-owner">
+                            {% if request.user == compose.owner %}<a href="{% url 'profile' %}" class="user-link">{% else %}<a href="{% url 'user-account' compose.owner.id %}" class="user-link">{% endif %}
+                                <div class="div-img"><img src="{{compose.owner.profile_image.url}}"></div>
+                            <div class="user-info">
+                                <span class="span-strong">{{compose.owner.username}}</span>
+                                <span class="span-light">{{compose.owner.name}}</span>
+                            </div></a>
+                            <div class="compose-link">
+                                <div>
+                                    {% if compose.main_post %}
+                                        <p> 
+                                            {% if compose in compose.main_post.reposted %}
+                                                {% if compose.main_post.owner == compose.owner %}
+                                                    reposted
+                                                {% else %}
+                                                    repost {{compose.main_post.owner.name}} post
+                                                {% endif %}
+                                            {% else %}
+                                                {% if compose.owner != compose.main_post.owner %}
+                                                    comment on {{compose.main_post.owner.name}}
+                                                    {% if compose.main_post not in compose.main_post.main_post.reposted.all %}
+                                                    post
+                                                    {% else %}
+                                                    repost
+                                                    {% endif %}
+                                                {% else %}
+                                                    comment on their post
+                                                {% endif %}
+                                            {% endif %}
+                                            {{compose.created|timesince}} ago</p>
+                                    {% else %}
+                                        <p>posted {{compose.created|timesince}} ago</p>
+                                    {% endif %}
+                                </div>
+                                {% if compose.owner == request.user %}
+                                    <form method="POST" action="{% url 'deletepost' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" value="{{compose.pk}}" name="pk">
+                                        <button class="btn-danger">x</button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!--End owner info-->
+
+                        <!--Reacted Post-->
+                        {% if compose.main_post %}
+                            {% if request.user not in compose.main_post.blocked_users.all %}
+                                {% if request.user not in compose.main_post.owner.blocked.all %}
+                                    {% if compose.main_post.owner not in request.user.blocked.all %}
+                                        {% if compose.main_post.post_body or compose.main_post.post_image %}
+                                            <div class="main-post">
+                                                <a href="{% url 'single_post' compose.main_post.id %}">
+                                                    <div class="div-img"><img src="{{compose.main_post.owner.profile_image.url}}"></div>
+                                                    <diV class="user-info">
+                                                        <span class="span-strong">{{compose.main_post.owner.username}}</span>
+                                                        <span class="span-light">{{compose.main_post.owner.name}}</span>
+                                                    </diV>
+                                                    {{compose.main_post.post_body}}
+                                                    {% if compose.main_post.post_image %}
+                                                        <img class="compose-image" src="{{compose.main_post.post_image.url}}">
+                                                    {% endif %}
+                                                </a>
+                                            </div>
+                                        {% else %}
+                                            <div class="main-post">
+                                                <a href="{% url 'single_post' compose.main_post.id %}">
+                                                    <div class="div-img"><img src="{{compose.main_post.main_post.owner.profile_image.url}}"></div>
+                                                    <diV class="user-info">
+                                                        <span class="span-strong">{{compose.main_post.main_post.owner.username}}</span>
+                                                        <span class="span-light">{{compose.main_post.main_post.owner.name}}</span>
+                                                    </diV>
+                                                    {{compose.main_post.main_post.post_body}}
+                                                    {% if compose.main_post.main_post.post_image %}
+                                                        <img class="compose-image" src="{{compose.main_post.main_post.post_image.url}}">
+                                                    {% endif %}
+                                                </a>
+                                            </div>
+                                        {% endif %}
+                                    {% else %}
+                                        <div class="main-post">
+                                            <p>Unblock {{compose.main_post.owner.name}} to view post</p>
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <div class="main-post">
+                                        <p>You can't view this post at the momment</p>
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <div class="main-post">
+                                    <p>You can't view this post at the momment</p>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                        <!--End Reacted Post-->
+
+                        <!--Single Post Body-->
+                        <div class="compose-body">
+                            <div class="post-body">
+                                <p>{{compose.post_body}}</p>
+                                {% if compose.post_image %}
+                                    <img class="compose-image" src="{{compose.post_image.url}}">
+                                {% endif %}
+                            </div>
+                            
+                        </div>
+                        <!--End single post-->
+
+                        <!--Comment on post-->
+                        <div class="div-comment">
+                            <form method="POST" action="{% url 'comment' compose.id %}" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                
+                                {% for fields in commentform %}
+                                <div class="div-posty">
+                                    
+                                    <label for="formInput#text">{{fields.label}}</label>
+                                    {{fields}}
+                                    <span class="span-light">{{fields.errors}}</span>
+                                </div>
+                                {% endfor %}
+                            
+                                <button > <span class="span-light">
+                                    Comment | {{compose.comments.count}}</span></button>
+                            </form>
+                        </div>
+                        <!--End comment on post-->
+
+                        <!--Like Button-->
+                        <div class="compose-action">
+
+                            <!---Repost Link-->
+                            {% if compose in compose.main_post.reposted %}
+
+                                {% if request.user.id not in compose.main_post.reposters %}
+                                    <a href="{% url 'repost' compose.main_post.id %}" type="submit" class="btn">
+                                        <span class="span-light">Repost | {{compose.main_post.reposts.count}} </span></a>
+                            
+                                {% else %}
+                                    <form method="POST" action="{% url 'delete-repost' compose.main_post.id %}">
+                                        {% csrf_token %}
+                                
+                                        <button class="btn"> <span class="span-light">
+                                            Undorepost | {{compose.main_post.reposts.count}} </span></button>
+                                    </form>
+                                {% endif %}
+
+                            {% else %}
+                                {% if request.user.id not in compose.reposters %}
+                                    <a href="{% url 'repost' compose.id %}" type="submit" class="btn">
+                                        <span class="span-light">Repost | {{compose.reposts.count}} </span></a>
+                                    
+                                {% else %}
+                                    <form method="POST" action="{% url 'delete-repost' compose.id %}">
+                                        {% csrf_token %}
+                                
+                                        <button class="btn"> <span class="span-light">
+                                            Undorepost | {{compose.reposts.count}} </span></button>
+                                    </form>
+                                {% endif %}
+                            {% endif %}
+                        <!---End of Repost Link-->
+    
+                            {% if request.user.id not in compose.likers %}
+                                <form method="POST" action="{% url 'likepost' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" value="{{compose.pk}}" name="pk">
+    
+                                    <button class="btn"> <span>Like | {{compose.likedpost_set.all.count}}</span></button>
+                                </form>
+                            {% else %}
+                                <form method="POST" action="{% url 'unlike' compose.id %}">
+                                    {% csrf_token %}
+    
+                                    <button class="btn"><span>Unlike | {{compose.likedpost_set.all.count}}</span></button>
+                                </form>
+                            {% endif %}
+                        </div>
+                        <!--End like button-->
+                    </div>
+
+                    <!--Post comments-->
+                {% if comment %}
+                <h5>COMMENTS</h5>
+                {% else %}
+                <p>No Comment For This Post</p>
+                {% endif %}
+                {% for comments in comment %}
+                    <div>
+                      
+                        <div class="comment-design">
+                            <h6>{{comments.owner.name}}</h6>
+                            <p>{{comments.post_body}}</p>
+                            {% if comments.post_image %}
+                                <img class="comments-image" src="{{comments.post_image.url}}">
+                            {% endif %}
+
+                            <div class="compose-action">
+                                {% if comments.owner == request.user %}
+                                <form method="POST" action="{% url 'uncomment' comments.id %}">
+                                    {% csrf_token %}
+
+                                    <button class="btn btn-uncomment"> <span>Delete</span></button>
+                                </form>
+                                {% endif %}
+
+                                {% if request.user.id not in comments.likers %}
+                                    <form method="POST" action="{% url 'likepost' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" value="{{comments.pk}}" name="pk">
+        
+                                        <button class="btn"> <span>Like | {{comments.likedpost_set.all.count}}</span></button>
+                                    </form>
+                                {% else %}
+                                    <form method="POST" action="{% url 'unlike' comments.id %}">
+                                        {% csrf_token %}
+        
+                                        <button class="btn"><span>Unlike | {{comments.likedpost_set.all.count}}</span></button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                    </div>
+                {% endfor %}
+                <!--End comments-->
+            </div>
+
+            <!--Post Actions-->
+            <div class="commentby">
+                <h5>Total Likes,Reposts Comments</h5>
+                <div>
+                    <h6>Total likes : {{compose.likedpost_set.all.count}}</h6>
+                </div>
+                <div>
+                    <h6>Total Repost : {{compose.reposts.count}}</h6>
+                </div>
+                <div>
+                    <h6>Total Comment : {{compose.comments.count}}</h6>
+                </div>
+            </div>
+            <!--End post actions-->
+        </div>
+
+    </div>
+
+
+{% endblock content %}
+

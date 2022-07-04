@@ -1,0 +1,58 @@
+{% extends 'main.html' %}
+
+{% block content %}
+        <!--Repost Section-->
+        <section id="repost">
+            <div class="container flex justify-center px-6 mx-auto mt-10">
+                <div class="p-3 rounded-lg border-2 w-4/5 md:w-2/5">
+                    {% if request.user not in post.blocked_users.all %}
+                    {% if request.user not in post.owner.blocked.all %}
+                        {% if post.owner not in request.user.blocked.all %}
+                            {% if request.user.id in post.reposts %}
+                                <p>You can't recompose twice</p>
+                            {% else %}
+                                <div class="flex flex-col w-full space-y-6">
+                                    <!--repost-->
+                                    <div class="flex flex-row p-3 bg-lightBlue rounded-lg">
+                                        <div class="flex flex-row">
+                                            <div class="rounded-full w-10 h-10 border-2 border-lightBlue"><img src="{{post.owner.profile_image.url}}" class="rounded-full h-full w-full"></div>
+                                            
+                                        </div>
+                                        <div class="">
+                                            <h4 class="font-bold">{{post.owner.username}}</h4>
+                                            <p class="font-light text-xs">{{post.created|timesince}} ago</p>
+                                            <p>{{post.post_body}}</p>
+                                            {% if post.post_image %}
+                                            <img class="rounded-lg w-1/2" src="{{post.post_image.url}}">
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <!--Repost form-->
+                                    <form method="POST" action="{% url 'repost' post.id %}" enctype="multipart/form-data" class="flex flex-col border-2 border-lightBlue p-3 rounded-lg">
+                                        {% csrf_token %}
+                                        <div class="flex flex-row space-x-3">
+                                            {{repostform.post_body}}
+                                            <div>
+                                                <button class="rounded-full px-3 py-2 bg-lightBlue text-white">Repost</button>
+                                            </div>
+                                        </div>
+                                        <div class="flex">
+                                            {{repostform.post_image}}
+                                            <label class="rounded-full border-2 border-lightBlue px-3" for="repost_image">Upload image</label>
+                                        </div>
+                                    </form>
+                                </div>
+                            {% endif %}
+                    {% else %}
+                        <p>Unblock {{post.owner.name}} to repost</p>
+                    {% endif %}
+                        {% else %}
+                            <p>You can't repost this post</p>
+                        {% endif %}
+                    {% else %}
+                        <p>You can't repost this post</p>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+{% endblock content %}

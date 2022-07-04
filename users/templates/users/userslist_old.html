@@ -1,0 +1,77 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<div class="div-container">
+    <div class="repost">
+        <form method="GET" action="{% url 'userslist' %}">
+            <input type="search" placeholder="search for user" name="q" class="reg-input search-input">
+        </form>
+        {% for user_account in userslist %}
+            <div class="user-list">
+                <div class="div-img">
+                    <a href="{% url 'user-account' user_account.id %}" class="user-link">
+                        {% if user_account.online == True %}
+                        <img class="online" src="{{user_account.profile_image.url}}">
+                        {% else %}
+                            <img class="offline" src="{{user_account.profile_image.url}}">
+                        {% endif %}
+                    </a>
+                </div>
+                <div class="friend-accept">
+                    <div class="form-action">
+                        <a href="{% url 'user-account' user_account.id %}" class="user-link">
+                            <h4>{{user_account.name}}</h4></a>
+                        </a>
+                    </div>
+                </div>
+
+                {% if user_account in request.user.friends.all %}
+                <form method="POST" action="{% url 'unfriend' user_account.id %}">
+                    {% csrf_token %}
+
+                    <button class="btn btn-userlist"><span>Unfriend</span></button>
+                </form>
+                <a class="btn-userlist user-link" href="{% url 'message' user_account.id %}"><span>Message</span>
+                {% elif user_account in request.user.received_requests.all %}
+                <!--Accept or delete request button-->
+                    <div class="friend-accept">
+                            <div class="form-action">
+                                <form method="POST" action="{% url 'accept-request' user_account.id %}">
+                                    {% csrf_token %}
+
+                                    <button class="btn btn-userlist"><span>Accept</span></button>
+                                </form>
+
+                                <form method="POST" action="{% url 'delete-request' user_account.id %}">
+                                    {% csrf_token %}
+
+                                    <button class="btn btn-userlist"><span>Delete</span></button>
+                                </form>
+                            </div>
+                    </div>
+                <!--End accept or delete-->
+                {% elif user_account in request.user.sent_requests.all %}
+                    <!--Myrequest-->
+                    <div class="form-action">
+                        <form method="POST" action="{% url 'cancle-request' user_account.id %}">
+                            {% csrf_token %}
+
+                            <button class="btn btn-userlist"><span>Cancle Request</span></button>
+                        </form>
+                    </div>
+                    <!--End myrequest-->
+                {% else %}
+                <div class="form-action">
+                    <form method="POST" action="{% url 'friend-request' user_account.id %}">
+                        {% csrf_token %}
+
+                        <button class="btn btn-userlist"><span> Add Friend </span></button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock content %}

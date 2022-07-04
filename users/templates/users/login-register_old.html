@@ -1,0 +1,40 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+
+<div class="login-container">
+    {% if page == login %}
+    <div class="login">
+        <h3>Login to Composa</h3>
+        <form method="POST" action="" class="form-login">
+            {% csrf_token %}
+            <label for="username"></label>
+            <input class="reg-input" type="email" name="email" placeholder="Enter Email">
+            
+            <label for="password"></label>
+            <input class="reg-input" type="password" name="password" placeholder="Enter Password">
+            <button class="reg-button"><span>Login</span></button>
+        </form>
+        <P>Don't have an account? <a href="{% url 'register' %}">Sign Up</a></P>
+    </div>
+    {% else %}
+    <div class="login">
+        <h3>Register to get Onboard</h3>
+        <form method="POST" action="" class="form-login">
+            {% csrf_token %}
+            
+            {% for fields in form %}
+                <label for="formInput#text">{{fields.label}}</label>
+                {{fields}}
+                {{fields.errors}}
+            {% endfor %}
+            <button class="reg-button"><span>Register</span></button>
+        </form>
+        <P>Already have an account? <a href="{% url 'login' %}">Sign in</a></P>
+    </div>
+    {% endif %}
+</div>
+
+
+{% endblock content %}
